@@ -1,0 +1,213 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: endToendTest.spec.ts >> end to end testing
+- Location: tests\endToendTest.spec.ts:3:5
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByRole('heading', { name: 'Personal Details' })
+Expected: visible
+Timeout: 3000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" getByRole('heading', { name: 'Personal Details' }) with timeout 3000ms
+  - waiting for getByRole('heading', { name: 'Personal Details' })
+
+```
+
+```yaml
+- complementary:
+  - navigation "Sidepanel":
+    - link "client brand banner":
+      - /url: https://www.orangehrm.com/
+      - img "client brand banner"
+    - textbox "Search"
+    - button ""
+    - separator
+    - list:
+      - listitem:
+        - link "Admin":
+          - /url: /web/index.php/admin/viewAdminModule
+      - listitem:
+        - link "PIM":
+          - /url: /web/index.php/pim/viewPimModule
+      - listitem:
+        - link "Leave":
+          - /url: /web/index.php/leave/viewLeaveModule
+      - listitem:
+        - link "Time":
+          - /url: /web/index.php/time/viewTimeModule
+      - listitem:
+        - link "Recruitment":
+          - /url: /web/index.php/recruitment/viewRecruitmentModule
+      - listitem:
+        - link "My Info":
+          - /url: /web/index.php/pim/viewMyDetails
+      - listitem:
+        - link "Performance":
+          - /url: /web/index.php/performance/viewPerformanceModule
+      - listitem:
+        - link "Dashboard":
+          - /url: /web/index.php/dashboard/index
+      - listitem:
+        - link "Directory":
+          - /url: /web/index.php/directory/viewDirectory
+      - listitem:
+        - link "Maintenance":
+          - /url: /web/index.php/maintenance/viewMaintenanceModule
+      - listitem:
+        - link "Claim":
+          - /url: /web/index.php/claim/viewClaimModule
+          - img
+          - text: Claim
+      - listitem:
+        - link "Buzz":
+          - /url: /web/index.php/buzz/viewBuzz
+- banner:
+  - heading "PIM" [level=6]
+  - link "Upgrade":
+    - /url: https://orangehrm.com/open-source/upgrade-to-advanced
+    - button "Upgrade"
+  - list:
+    - listitem:
+      - img "profile picture"
+      - paragraph: ads asdasd
+      - text: 
+  - navigation "Topbar Menu":
+    - list:
+      - listitem: Configuration 
+      - listitem:
+        - link "Employee List":
+          - /url: "#"
+      - listitem:
+        - link "Add Employee":
+          - /url: "#"
+      - listitem:
+        - link "Reports":
+          - /url: "#"
+      - button ""
+- heading "Add Employee" [level=6]
+- separator
+- button "Choose File"
+- img "profile picture"
+- button ""
+- paragraph: "Accepts jpg, .png, .gif up to 1MB. Recommended dimensions: 200px X 200px"
+- text: Employee Full Name*
+- textbox "First Name": Ravi
+- textbox "Middle Name": Kumar
+- textbox "Last Name": Sharma
+- text: Employee Id
+- textbox: "0642"
+- separator
+- paragraph: Create Login Details
+- checkbox
+- separator
+- paragraph: "* Required"
+- button "Cancel"
+- button "Save"
+- paragraph: OrangeHRM OS 5.9
+- paragraph:
+  - text: © 2005 - 2026
+  - link "OrangeHRM, Inc":
+    - /url: http://www.orangehrm.com
+  - text: . All rights reserved.
+```
+
+# Test source
+
+```ts
+  1  | import {test,expect} from '@playwright/test';
+  2  | 
+  3  | test('end to end testing',async({page})=>{
+  4  | 
+  5  | await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+  6  | 
+  7  | //await expect (page.getByRole('img',{name:'OrangHrm'})).toBeVisible();
+  8  | 
+  9  | 
+  10 | //login page
+  11 | await page.getByPlaceholder('Username').fill('Admin');
+  12 | await page.getByRole('textbox',{name:'Password'}).fill('admin123');
+  13 | await page.getByRole('button',{name:'Login'}).click();
+  14 | 
+  15 | await expect (page.getByRole('heading',{name:'Dashboard'})).toBeVisible();
+  16 | 
+  17 | await page.getByRole('link',{name:'PIM'}).click();
+  18 | 
+  19 | await expect (page.getByRole('heading',{name:'PIM'})).toBeVisible();
+  20 | 
+  21 | await expect(page).toHaveURL('https://opensource-demo.orangehrmlive.com/web/index.php/pim/viewEmployeeList');
+  22 | 
+  23 | //add employee
+  24 | await page.getByRole('button',{name:'Add'}).click();
+  25 | 
+  26 | await page.waitForLoadState('load');
+  27 | await expect(page.getByText('Employee Full Name')).toBeVisible();
+  28 | 
+  29 | await page.getByPlaceholder('First Name').fill('Ravi');
+  30 | await page.getByPlaceholder('Middle Name').fill('Kumar');
+  31 | await page.getByPlaceholder('Last Name').fill('Sharma');
+  32 | 
+  33 | 
+  34 | const employeeID=page.locator('.oxd-input-group').filter({has:page.locator('label',{hasText:'Employee Id'})}).locator('.oxd-input.oxd-input--active')
+  35 | 
+  36 | const employeeIDValue=await employeeID.inputValue();
+  37 | 
+  38 | console.log("Autogenerated Employee ID is: ",employeeIDValue);
+  39 | 
+  40 | await page.getByRole('button',{name:'Save'}).click();
+  41 | 
+> 42 | await expect(page.getByRole('heading',{name:'Personal Details'})).toBeVisible({timeout:3000}); //validation
+     |                                                                   ^ Error: expect(locator).toBeVisible() failed
+  43 | 
+  44 | //again click on PIM link 
+  45 | await page.getByRole('link',{name:'PIM'}).click();
+  46 | 
+  47 | await employeeID.fill(employeeIDValue);
+  48 | await page.getByRole('button',{name:'Search'}).click();
+  49 | 
+  50 | const newEmployeeRow=page.locator('.oxd-table-card').filter({hasText:employeeIDValue});
+  51 | 
+  52 | await newEmployeeRow.click();
+  53 | 
+  54 | page.locator('.oxd-input-group').filter({has:page.locator('label',{hasText:"Driver's License Number"
+  55 | })}).locator('.oxd-input oxd-input--active').fill('DL123');
+  56 | 
+  57 | page.locator('.oxd-input-group').filter({has:page.locator('label',{hasText:"Driver's License Number"
+  58 | })}).getByPlaceholder('yyyy-mm-dd').fill('2026-12-31');//calender for licenceexpiry date
+  59 | 
+  60 | //calender for date of birth
+  61 | const calender=page.locator('.oxd-input-group').filter({has:page.locator('label',{hasText:"Date of Birth"})}).getByPlaceholder('yyyy-dd-mm');
+  62 | await calender.click();
+  63 | 
+  64 | const year='1993';
+  65 | const month='jan';
+  66 | const date='22';
+  67 | 
+  68 | const calenderdropdown=page.locator('.oxd-date-input-calender')
+  69 | 
+  70 | await calenderdropdown.waitFor({state:'visible',timeout:1500});
+  71 | 
+  72 | await calenderdropdown.getByText('2026').click();
+  73 | 
+  74 | await calenderdropdown.getByText(year).click();
+  75 | 
+  76 | await calenderdropdown.getByText('September').click();
+  77 | 
+  78 | await calenderdropdown.getByText(month).click();
+  79 | 
+  80 | await calenderdropdown.getByText(date).click();
+  81 | await expect(calender).toHaveValue('1993-22-jan');
+  82 | })
+  83 | 
+```
