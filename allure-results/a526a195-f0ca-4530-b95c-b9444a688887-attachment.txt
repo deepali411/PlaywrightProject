@@ -1,0 +1,7 @@
+40+ Free Automation Testing Practice Exercises | Selenium, Cypress, Playwright | XQA
+Playwright User
+4
+Name: Playwright User
+Email: playwright@example.com
+Current Address : Updated 123 Main Street, Anytown, USA
+Permanent Address : Updated 456 Elm Street, Othertown, USA

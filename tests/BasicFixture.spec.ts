@@ -6,7 +6,7 @@ test('has title',async ({ page }) => {
 });
 
 
-test.only ('test without fixture', async () => {
+test ('test without fixture', async () => {
 
     const browser = await chromium.launch();
     const page = await browser.newPage();
